@@ -1,5 +1,5 @@
 // Lokum service worker: gemmer appen, så den virker offline.
-const CACHE = 'lokum-v2';
+const CACHE = 'lokum-v3';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

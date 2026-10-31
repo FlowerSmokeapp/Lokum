@@ -239,19 +239,14 @@ main { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: 
 .share-ico { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; }
 
 /* Computer: vis appen i en telefonramme */
-.desk { display: none; }
 @media (min-width: 760px) and (min-height: 600px) {
-  body { align-items: center; gap: 64px; padding: 24px; background: radial-gradient(1200px 700px at 30% 20%, #FFF 0%, var(--red-soft) 55%, #F7C9CE 100%); }
+  body { align-items: center; padding: 16px; background: radial-gradient(1200px 700px at 30% 20%, #FFF 0%, var(--red-soft) 55%, #F7C9CE 100%); }
   .phone { width: auto; max-width: none; height: auto; position: relative; padding: 12px; background: #1B0B0D; border-radius: 56px; box-shadow: 0 0 0 2px #3A2326, 0 40px 90px rgba(120,0,10,.35); flex: none; }
   .phone::before { content: ""; position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 110px; height: 30px; background: #1B0B0D; border-radius: 20px; z-index: 20; }
-  .app { width: 390px; height: min(844px, calc(100vh - 72px)); max-width: none; border-radius: 44px; box-shadow: none; }
+  .app { width: 390px; height: 844px; max-width: none; border-radius: 44px; box-shadow: none; }
   .top { padding-top: 54px; }
   .tabs { padding-bottom: 14px; }
-  .desk { display: flex; flex-direction: column; gap: 18px; max-width: 360px; }
-  .desk h2 { font-size: 52px; font-weight: 800; color: var(--red); letter-spacing: -.02em; }
-  .desk p { margin: 0; font-size: 18px; color: var(--ink); }
 }
-@media (display-mode: standalone) { .desk { display: none !important; } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -259,10 +254,6 @@ main { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: 
 </style>
 </head>
 <body>
-<aside class="desk">
-  <h2>Lokum</h2>
-  <p>Tyrkisk på 10 minutter om dagen. Prøv appen her i telefonen til højre.</p>
-</aside>
 <div class="phone">
 <div class="app">
   <header class="top">
@@ -781,6 +772,13 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet
 try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch {}
 
 render();
+
+// ---------- Computer: lad telefonen fylde skærmen ----------
+(function fitPhone() {
+  const phone = document.querySelector('.phone'), mq = matchMedia('(min-width: 760px) and (min-height: 600px)');
+  const fit = () => { phone.style.zoom = mq.matches ? Math.min((innerHeight - 24) / 868, (innerWidth - 24) / 414).toFixed(3) : ''; };
+  fit(); addEventListener('resize', fit);
+})();
 
 // ---------- App på hjemmeskærmen ----------
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
