@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lokum – tyrkisk på 10 min</title>
+<meta name="description" content="Lær tyrkisk på 10 minutter om dagen. Ord, sætninger, udtale og quizzer.">
+<meta name="theme-color" content="#D90B1C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lokum">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Én visuel verden: rød og hvid som det tyrkiske flag. Telefonformet app, centreret kolonne, fanelinje i bunden. */
+  --red: #D90B1C;
+  --red-deep: #A8000F;
+  --red-soft: #FDECEE;
+  --paper: #FFFFFF;
+  --ink: #2A1416;
+  --muted: #7A5F62;
+  --line: #F1D6D9;
+  --flame: #FF8A00;
+  --good: #128A4A;
+  --good-soft: #E5F5EC;
+  --bad: #B3261E;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--red-soft);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  display: flex;
+  justify-content: center;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+
+.app {
+  width: 100%;
+  max-width: 440px;
+  height: 100%;
+  position: relative;
+  transform: translateZ(0); /* gør fixed-elementer (købsark, banner) relative til appen */
+  overflow: hidden;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 0 1px var(--line), 0 20px 60px rgba(168,0,15,.12);
+}
+.top {
+  background: var(--red);
+  color: #fff;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand h1 { font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+.brand small { display: block; font-size: 12px; opacity: .85; font-family: var(--font-body); font-weight: 400; }
+.streak {
+  display: flex; align-items: center; gap: 4px;
+  background: #fff; color: var(--red-deep);
+  border-radius: 999px; padding: 5px 12px 5px 8px;
+  font-family: var(--font-display); font-weight: 800; font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.streak svg { width: 22px; height: 22px; }
+.streak.pulse svg { animation: pop .6s ease; }
+@keyframes pop { 50% { transform: scale(1.35) rotate(-6deg); } }
+
+.mode {
+  display: flex; gap: 6px; padding: 10px 18px; background: var(--red-deep);
+}
+.mode[hidden] { display: none; }
+.mode button {
+  flex: 1; border: 0; border-radius: 8px; padding: 7px 8px; font-size: 13px;
+  background: transparent; color: #fff; opacity: .75;
+}
+.mode button[aria-pressed="true"] { background: #fff; color: var(--red-deep); opacity: 1; font-weight: 700; }
+
+main > * { flex-shrink: 0; }
+.phone { width: 100%; max-width: 440px; height: 100%; }
+main { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 18px; }
+
+.tabs { padding-bottom: env(safe-area-inset-bottom); display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); background: var(--paper); }
+.tabs button {
+  border: 0; background: none; padding: 9px 4px 11px; font-size: 12px; color: var(--muted);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.tabs svg { width: 22px; height: 22px; }
+.tabs button[aria-current="page"] { color: var(--red); font-weight: 700; }
+
+.card { border: 1.5px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.hero { background: var(--red); color: #fff; border: 0; position: relative; overflow: hidden; }
+.hero h2 { font-size: 26px; font-weight: 800; }
+.hero p { margin: 0; opacity: .92; max-width: 30ch; }
+.hero .art { position: absolute; right: -6px; bottom: -8px; width: 120px; opacity: .95; }
+.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--muted); }
+.hero .eyebrow { color: #fff; opacity: .8; }
+
+.btn {
+  border: 0; border-radius: 12px; padding: 13px 18px; font-weight: 700; font-size: 16px;
+  background: var(--red); color: #fff; box-shadow: 0 3px 0 var(--red-deep);
+  transition: transform .08s;
+}
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--red-deep); }
+.btn.white { background: #fff; color: var(--red-deep); box-shadow: 0 3px 0 rgba(0,0,0,.18); align-self: flex-start; }
+.btn.ghost { background: var(--paper); color: var(--red-deep); border: 1.5px solid var(--line); box-shadow: none; }
+.btn:disabled { opacity: .45; cursor: default; }
+
+.goal { display: flex; align-items: center; gap: 14px; }
+.ring { width: 64px; height: 64px; flex: none; }
+.goal strong { font-family: var(--font-display); font-size: 20px; }
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; font-size: 12px; color: var(--muted); }
+.week span { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.week i { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; }
+.week i.on { background: var(--flame); border-color: var(--flame); }
+.week i.on svg { width: 16px; height: 16px; }
+.week i.today { border-color: var(--red); border-width: 2px; }
+
+.themes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.theme { border: 1.5px solid var(--line); border-radius: 14px; background: var(--paper); padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; }
+.theme svg { width: 44px; height: 44px; }
+.theme small { font-weight: 400; color: var(--muted); font-size: 12px; }
+
+.list { display: flex; flex-direction: column; gap: 10px; }
+.lesson {
+  display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 12px;
+  border: 1.5px solid var(--line); border-radius: 14px; background: var(--paper); padding: 10px 12px; text-align: left;
+}
+.lesson .num { width: 44px; height: 44px; border-radius: 12px; background: var(--red-soft); color: var(--red-deep); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 18px; }
+.lesson.done .num { background: var(--red); color: #fff; }
+.lesson.locked { background: #FBF7F7; }
+.lesson.locked .num { background: #EFE6E7; color: var(--muted); }
+.lesson b { display: block; }
+.lesson small { color: var(--muted); }
+.pill { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.free { background: var(--good-soft); color: var(--good); }
+.pill.pro { background: var(--ink); color: #fff; }
+.pill.done { background: var(--red); color: #fff; }
+
+.filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.filters button { border: 1.5px solid var(--line); background: var(--paper); border-radius: 999px; padding: 6px 12px; font-size: 14px; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Lektion */
+.lessonview { display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.progress { display: flex; align-items: center; gap: 10px; }
+.progress .bar { flex: 1; height: 12px; background: var(--red-soft); border-radius: 999px; overflow: hidden; }
+.progress .bar i { display: block; height: 100%; background: var(--red); border-radius: 999px; transition: width .3s; }
+.close { border: 0; background: none; font-size: 24px; line-height: 1; color: var(--muted); padding: 4px 6px; }
+.timer { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--muted); min-width: 40px; text-align: right; }
+
+.flash { text-align: center; padding: 26px 16px; gap: 14px; align-items: center; }
+.flash .word { font-family: var(--font-display); font-size: 40px; font-weight: 800; color: var(--red-deep); }
+.flash .word.sentence { font-size: 28px; }
+.flash .tr { font-size: 18px; }
+.flash .say { color: var(--muted); font-size: 14px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.round { width: 58px; height: 58px; border-radius: 50%; border: 0; background: var(--red); color: #fff; display: grid; place-items: center; box-shadow: 0 3px 0 var(--red-deep); }
+.round.alt { background: var(--paper); color: var(--red); border: 2px solid var(--red); box-shadow: none; }
+.round svg { width: 26px; height: 26px; }
+.round.rec { animation: rec 1s infinite; }
+@keyframes rec { 50% { box-shadow: 0 0 0 8px rgba(217,11,28,.2); } }
+.feedback { border-radius: 12px; padding: 10px 12px; font-size: 14px; text-align: left; width: 100%; }
+.feedback.ok { background: var(--good-soft); color: var(--good); }
+.feedback.info { background: var(--red-soft); color: var(--red-deep); }
+.selfrate { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.selfrate button { border: 1.5px solid var(--line); background: var(--paper); border-radius: 10px; padding: 7px 12px; font-size: 14px; }
+
+.q { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.q b { color: var(--red-deep); font-weight: 800; }
+.opts { display: grid; gap: 10px; }
+.opt { border: 2px solid var(--line); border-radius: 14px; padding: 14px; background: var(--paper); text-align: left; font-size: 17px; }
+.opt.right { border-color: var(--good); background: var(--good-soft); color: var(--good); font-weight: 700; }
+.opt.wrong { border-color: var(--bad); background: #FCEBEA; color: var(--bad); }
+.spacer { flex: 1; }
+
+.result { text-align: center; align-items: center; padding: 28px 16px; }
+.result .big { font-family: var(--font-display); font-size: 48px; font-weight: 800; color: var(--red); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
+.stats div { background: var(--red-soft); border-radius: 12px; padding: 10px 6px; }
+.stats b { display: block; font-family: var(--font-display); font-size: 22px; color: var(--red-deep); font-variant-numeric: tabular-nums; }
+.stats small { color: var(--muted); font-size: 12px; }
+
+/* Premium */
+.plans { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.plan { border: 2px solid var(--line); border-radius: 14px; padding: 14px 12px; background: var(--paper); text-align: left; display: flex; flex-direction: column; gap: 4px; position: relative; }
+.plan[aria-pressed="true"] { border-color: var(--red); background: var(--red-soft); }
+.plan b { font-family: var(--font-display); font-size: 24px; font-variant-numeric: tabular-nums; }
+.plan small { color: var(--muted); }
+.plan .save { position: absolute; top: -10px; right: 10px; background: var(--flame); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.compare { width: 100%; border-collapse: collapse; font-size: 14px; }
+.compare th, .compare td { padding: 9px 4px; border-bottom: 1px solid var(--line); text-align: center; }
+.compare th:first-child, .compare td:first-child { text-align: left; }
+.compare th { font-size: 12px; color: var(--muted); font-weight: 700; }
+.yes { color: var(--red); font-weight: 700; }
+.no { color: #C9B5B7; }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* Samtale */
+.chat { display: flex; flex-direction: column; gap: 8px; }
+.bubble { max-width: 82%; padding: 10px 13px; border-radius: 16px; font-size: 15px; }
+.bubble small { display: block; opacity: .75; font-size: 13px; }
+.bubble.them { background: var(--red-soft); align-self: flex-start; border-bottom-left-radius: 4px; }
+.bubble.me { background: var(--red); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.lockbox { text-align: center; align-items: center; background: #FBF7F7; }
+.lockbox svg { width: 40px; height: 40px; color: var(--red); }
+
+.sheet { position: absolute; inset: 0; background: rgba(42,20,22,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 10; }
+.sheet[hidden] { display: none; }
+.sheet .panel { background: var(--paper); width: 100%; max-width: 440px; border-radius: 20px 20px 0 0; padding: 20px 18px 24px; display: flex; flex-direction: column; gap: 14px; max-height: 92%; overflow-y: auto; }
+
+/* Installér-banner (kun mobil i browser) */
+.install { position: absolute; left: 12px; right: 12px; bottom: calc(76px + env(safe-area-inset-bottom)); z-index: 5;
+  background: var(--ink); color: #fff; border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25); font-size: 14px; }
+.install[hidden] { display: none; }
+.install img { width: 42px; height: 42px; border-radius: 10px; flex: none; }
+.install b { display: block; font-size: 15px; }
+.install .go { background: #fff; color: var(--red-deep); border: 0; border-radius: 10px; padding: 8px 12px; font-weight: 700; white-space: nowrap; }
+.install .x { background: none; border: 0; color: #fff; opacity: .7; font-size: 22px; padding: 0 4px; }
+.share-ico { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; }
+
+/* Computer: vis appen i en telefonramme */
+.desk { display: none; }
+@media (min-width: 760px) and (min-height: 600px) {
+  body { align-items: center; gap: 64px; padding: 24px; background: radial-gradient(1200px 700px at 30% 20%, #FFF 0%, var(--red-soft) 55%, #F7C9CE 100%); }
+  .phone { width: auto; max-width: none; height: auto; position: relative; padding: 12px; background: #1B0B0D; border-radius: 56px; box-shadow: 0 0 0 2px #3A2326, 0 40px 90px rgba(120,0,10,.35); flex: none; }
+  .phone::before { content: ""; position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 110px; height: 30px; background: #1B0B0D; border-radius: 20px; z-index: 20; }
+  .app { width: 390px; height: min(844px, calc(100vh - 72px)); max-width: none; border-radius: 44px; box-shadow: none; }
+  .top { padding-top: 54px; }
+  .tabs { padding-bottom: 14px; }
+  .desk { display: flex; flex-direction: column; gap: 18px; max-width: 360px; }
+  .desk h2 { font-size: 52px; font-weight: 800; color: var(--red); letter-spacing: -.02em; }
+  .desk p { margin: 0; font-size: 18px; color: var(--ink); }
+  .desk .qr[hidden] { display: none; }
+  .desk .qr { display: flex; gap: 16px; align-items: center; background: #fff; border-radius: 18px; padding: 14px; box-shadow: 0 6px 24px rgba(168,0,15,.12); }
+  .desk .qr canvas, .desk .qr img { width: 120px; height: 120px; image-rendering: pixelated; }
+  .desk .qr span { font-size: 15px; color: var(--muted); }
+}
+@media (display-mode: standalone) { .desk { display: none !important; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<aside class="desk">
+  <h2>Lokum</h2>
+  <p>Tyrkisk på 10 minutter om dagen. Prøv appen her i telefonen til højre, eller åbn den på din mobil og læg den på hjemmeskærmen.</p>
+  <div class="qr"><div id="qr"></div><span>Scan med mobilens kamera for at åbne Lokum på telefonen.</span></div>
+</aside>
+<div class="phone">
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <img src="icons/icon-192.png" width="36" height="36" alt="" style="border-radius:9px;box-shadow:0 0 0 2px #fff">
+      <h1 id="appTitle">Lokum<small id="appSub">Hver dag. 10 minutter.</small></h1>
+    </div>
+    <div class="streak" id="streakBadge" title="Dagsstreak"><span id="flameSlot"></span><span id="streakNum">0</span></div>
+  </header>
+  <div class="mode" role="group" aria-label="Sprogretning">
+    <button id="modeDa" aria-pressed="true">Tyrkisk for danskere</button>
+    <button id="modeTr" aria-pressed="false">Türkler için Danca</button>
+  </div>
+  <main id="view"></main>
+  <nav class="tabs" id="tabs"></nav>
+  <div class="install" id="install" hidden>
+    <img src="icons/icon-192.png" alt="">
+    <div style="flex:1"><b>Læg Lokum på hjemmeskærmen</b><span id="installHow">Så åbner den som en app.</span></div>
+    <button class="go" id="installGo" hidden>Tilføj</button>
+    <button class="x" id="installX" aria-label="Luk">×</button>
+  </div>
+  <div class="sheet" id="sheet" hidden>
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" id="sheetPanel"></div>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+// ---------- Ikoner ----------
+const ICON = {
+  flame: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2.2 1-3.6 2-4.6.2 1.6 1 2.6 2 2.6 0-3 0-6 1-9z" fill="#FF8A00"/><path d="M12 13c.6 1.6 2.5 2.4 2.5 4.5a2.5 2.5 0 0 1-5 0c0-1.3.9-2.2 1.6-2.7.3.8.9 1.2.9 1.2V13z" fill="#FFD23F"/></svg>',
+  flameW: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2.2 1-3.6 2-4.6.2 1.6 1 2.6 2 2.6 0-3 0-6 1-9z" fill="#fff"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
+  speaker: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+};
+// Små temaillustrationer
+const ART = {
+  samtale: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="8" width="26" height="18" rx="6" fill="#D90B1C"/><path d="M10 26l-2 7 8-7z" fill="#D90B1C"/><rect x="18" y="20" width="26" height="16" rx="6" fill="#FDECEE" stroke="#D90B1C" stroke-width="2"/><path d="M38 36l2 6-7-6z" fill="#D90B1C"/><circle cx="25" cy="28" r="1.8" fill="#D90B1C"/><circle cx="31" cy="28" r="1.8" fill="#D90B1C"/><circle cx="37" cy="28" r="1.8" fill="#D90B1C"/></svg>',
+  mad: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 18h16l-2 22a3 3 0 0 1-3 2h-6a3 3 0 0 1-3-2z" fill="#FDECEE" stroke="#D90B1C" stroke-width="2"/><path d="M15 26h14l-1 13a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z" fill="#A8000F"/><path d="M14 18c0-2 1-3 3-3h10c2 0 3 1 3 3" fill="none" stroke="#D90B1C" stroke-width="2"/><ellipse cx="22" cy="44" rx="13" ry="2.5" fill="#D90B1C"/><path d="M34 8c-2 2 2 4 0 6M38 8c-2 2 2 4 0 6" stroke="#FF8A00" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+  rejse: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19" fill="#FDECEE"/><path d="M8 27l12-3 9-14c1-2 4-1 3 1l-4 12 12-1 3-4h3l-2 7 2 7h-3l-3-4-12-1 4 12c1 2-2 3-3 1l-9-14-12-3z" fill="#D90B1C" transform="rotate(-20 24 24) scale(.85) translate(4 4)"/></svg>',
+};
+const HERO_ART = '<svg class="art" viewBox="0 0 120 110" aria-hidden="true"><path d="M20 110V70c0-10 8-18 18-18s18 8 18 18v40z" fill="#fff" opacity=".18"/><path d="M60 110V40c0-14 12-26 26-26s26 12 26 26v70z" fill="#fff" opacity=".22"/><path d="M86 2v12M84 6h4" stroke="#fff" stroke-width="2" opacity=".5"/><circle cx="40" cy="30" r="12" fill="#fff" opacity=".9"/><circle cx="44.5" cy="30" r="9.6" fill="#D90B1C"/><path d="M58 24l1.5 4.3h4.5l-3.6 2.7 1.3 4.3L58 32.6l-3.7 2.7 1.3-4.3-3.6-2.7h4.5z" fill="#fff" opacity=".9"/></svg>';
+
+// ---------- Indhold ----------
+// Hvert par: [tyrkisk, dansk]. Retningen vendes i "Danca"-tilstand.
+const LESSONS = [
+  { id:1, theme:'samtale', da:'Hilsner', tr:'Selamlaşma',
+    words:[['Merhaba','Hej'],['Günaydın','Godmorgen'],['Teşekkür ederim','Tak'],['Evet','Ja'],['Hayır','Nej']],
+    sentences:[['Nasılsın?','Hvordan har du det?'],['İyiyim, teşekkürler.','Jeg har det godt, tak.']] },
+  { id:2, theme:'samtale', da:'Præsenter dig selv', tr:'Kendini tanıt',
+    words:[['Ben','Jeg'],['Sen','Du'],['Adın ne?','Hvad hedder du?'],['Memnun oldum','Rart at møde dig'],['Nerelisin?','Hvor er du fra?']],
+    sentences:[['Benim adım Anna.','Mit navn er Anna.'],['Danimarkalıyım.','Jeg er dansk.']] },
+  { id:3, theme:'mad', da:'På caféen', tr:'Kafede',
+    words:[['Su','Vand'],['Çay','Te'],['Kahve','Kaffe'],['Ekmek','Brød'],['Lütfen','Vær så venlig']],
+    sentences:[['Bir çay, lütfen.','En te, tak.'],['Hesap, lütfen.','Regningen, tak.']] },
+  { id:4, theme:'samtale', da:'Tal fra 1 til 5', tr:'1’den 5’e sayılar',
+    words:[['Bir','En'],['İki','To'],['Üç','Tre'],['Dört','Fire'],['Beş','Fem']],
+    sentences:[['Kaç lira?','Hvor mange lira?'],['Beş lira.','Fem lira.']] },
+  { id:5, theme:'rejse', da:'I lufthavnen', tr:'Havalimanında',
+    words:[['Havalimanı','Lufthavn'],['Bilet','Billet'],['Pasaport','Pas'],['Otel','Hotel'],['Taksi','Taxa']],
+    sentences:[['Otel nerede?','Hvor er hotellet?'],['Taksi çağırır mısınız?','Kan De ringe efter en taxa?']] },
+  { id:6, theme:'mad', da:'På restaurant', tr:'Restoranda',
+    words:[['Menü','Menu'],['Et','Kød'],['Tavuk','Kylling'],['Balık','Fisk'],['Lezzetli','Lækker']],
+    sentences:[['Çok lezzetli!','Meget lækkert!'],['Vejetaryen yemek var mı?','Er der vegetarisk mad?']] },
+  { id:7, theme:'rejse', da:'Find vej', tr:'Yol bulma',
+    words:[['Sağ','Højre'],['Sol','Venstre'],['Düz','Ligeud'],['Yakın','Tæt på'],['Uzak','Langt væk']],
+    sentences:[['Sağa dönün.','Drej til højre.'],['Uzak mı?','Er det langt væk?']] },
+  { id:8, theme:'mad', da:'På markedet', tr:'Pazarda',
+    words:[['Elma','Æble'],['Domates','Tomat'],['Peynir','Ost'],['Ne kadar?','Hvad koster det?'],['Pahalı','Dyr']],
+    sentences:[['Bu ne kadar?','Hvad koster den her?'],['Çok pahalı!','Meget dyrt!']] },
+  { id:9, theme:'samtale', da:'Vejr og small talk', tr:'Hava ve sohbet',
+    words:[['Hava','Vejr'],['Güzel','Dejlig'],['Sıcak','Varm'],['Bugün','I dag'],['Yarın','I morgen']],
+    sentences:[['Bugün hava çok güzel.','Vejret er dejligt i dag.'],['Yarın görüşürüz.','Vi ses i morgen.']] },
+  { id:10, theme:'rejse', da:'På hotellet', tr:'Otelde',
+    words:[['Oda','Værelse'],['Anahtar','Nøgle'],['Kahvaltı','Morgenmad'],['Rezervasyon','Reservation'],['Gece','Nat']],
+    sentences:[['Rezervasyonum var.','Jeg har en reservation.'],['Kahvaltı saat kaçta?','Hvornår er der morgenmad?']] },
+  { id:11, theme:'mad', da:'Smag og krydderier', tr:'Tatlar ve baharatlar',
+    words:[['Tatlı','Sød'],['Acı','Stærk'],['Tuz','Salt'],['Şeker','Sukker'],['Su böreği','Vandbørek']],
+    sentences:[['Acı mı?','Er det stærkt?'],['Şekersiz, lütfen.','Uden sukker, tak.']] },
+  { id:12, theme:'rejse', da:'Bus og færge', tr:'Otobüs ve vapur',
+    words:[['Otobüs','Bus'],['Vapur','Færge'],['Durak','Stoppested'],['İskele','Anløbsbro'],['Saat','Klokken']],
+    sentences:[['Vapur kaçta kalkıyor?','Hvornår sejler færgen?'],['Bu otobüs Taksim’e gider mi?','Kører denne bus til Taksim?']] },
+];
+const FREE_LIMIT = 5;
+const THEME_NAME = { samtale:['Samtale','Sohbet'], mad:['Mad','Yemek'], rejse:['Rejse','Seyahat'] };
+
+const DIALOG = [
+  { them:['Hoş geldiniz! Ne alırsınız?','Velkommen! Hvad skal det være?'],
+    replies:[ ['Bir çay, lütfen.','En te, tak.', true], ['Günaydın, hayır.','Godmorgen, nej.', false], ['Otel nerede?','Hvor er hotellet?', false] ] },
+  { them:['Şekerli mi, şekersiz mi?','Med eller uden sukker?'],
+    replies:[ ['Şekersiz, lütfen.','Uden sukker, tak.', true], ['Beş lira.','Fem lira.', false], ['Benim adım Anna.','Mit navn er Anna.', false] ] },
+  { them:['Buyurun, çayınız.','Værsgo, din te.'],
+    replies:[ ['Teşekkür ederim! Ne kadar?','Tak! Hvad koster det?', true], ['Sağa dönün.','Drej til højre.', false], ['Yarın görüşürüz.','Vi ses i morgen.', false] ] },
+  { them:['On lira. İyi günler!','Ti lira. Hav en god dag!'],
+    replies:[ ['Size de iyi günler!','I lige måde, hav en god dag!', true], ['Hayır.','Nej.', false], ['Uzak mı?','Er det langt væk?', false] ] },
+];
+
+// ---------- UI-tekster (dansk / tyrkisk) ----------
+const T = {
+  da: {
+    sub:'Tyrkisk på 10 min om dagen', tabs:['I dag','Lektioner','Samtale','Premium'],
+    todayEyebrow:'Dagens lektion', start:'Start lektion', goal:'Dagsmål', min:'min i dag', of10:'af 10 minutter',
+    week:['M','T','O','T','F','L','S'], themes:'Ordforråd efter tema', words:'ord', lessonsTitle:'Alle lektioner',
+    all:'Alle', free:'Gratis', pro:'Premium', done:'Klaret', learn:'Lær', listen:'Lyt', speak:'Sig det',
+    next:'Videre', check:'Tjek', quizTitle:'Hvad betyder', quizListen:'Lyt og vælg det rigtige ord',
+    correct:'Rigtigt!', wrong:'Det rigtige svar er', finished:'Lektion klaret!', xp:'XP', score:'rigtige', streak:'dages streak',
+    backHome:'Tilbage til forsiden', sayHint:'Tryk på mikrofonen og sig ordet højt',
+    micNo:'Mikrofonen er ikke tilgængelig. Giv adgang i browserens indstillinger, eller sig ordet højt og vurder dig selv:',
+    rate:['Svært','Næsten','Sikkert'], heard:'Vi hørte', match:'match', proFeedback:'Detaljeret udtalefeedback kræver Premium.',
+    locked:'Låst', unlock:'Lås op med Premium', remaining:'gratis lektioner tilbage',
+    voiceNote:'Oplæsningen bruger telefonens tyrkiske stemme. Optagelser af en modersmålstaler kommer i en senere version.',
+  },
+  tr: {
+    sub:'Günde 10 dakikada Danca', tabs:['Bugün','Dersler','Sohbet','Premium'],
+    todayEyebrow:'Günün dersi', start:'Derse başla', goal:'Günlük hedef', min:'dk bugün', of10:'10 dakikadan',
+    week:['Pt','Sa','Ça','Pe','Cu','Ct','Pa'], themes:'Temaya göre kelimeler', words:'kelime', lessonsTitle:'Tüm dersler',
+    all:'Tümü', free:'Ücretsiz', pro:'Premium', done:'Tamam', learn:'Öğren', listen:'Dinle', speak:'Söyle',
+    next:'Devam', check:'Kontrol', quizTitle:'Bunun anlamı ne', quizListen:'Dinle ve doğru kelimeyi seç',
+    correct:'Doğru!', wrong:'Doğru cevap', finished:'Ders tamamlandı!', xp:'XP', score:'doğru', streak:'günlük seri',
+    backHome:'Ana sayfaya dön', sayHint:'Mikrofona dokun ve kelimeyi yüksek sesle söyle',
+    micNo:'Mikrofon kullanılamıyor. Tarayıcı ayarlarından izin ver ya da kelimeyi yüksek sesle söyle ve kendini değerlendir:',
+    rate:['Zor','Neredeyse','Kolay'], heard:'Duyduğumuz', match:'eşleşme', proFeedback:'Ayrıntılı telaffuz geri bildirimi Premium gerektirir.',
+    locked:'Kilitli', unlock:'Premium ile aç', remaining:'ücretsiz ders kaldı',
+    voiceNote:'Seslendirme telefonun Danca sesini kullanır. Anadili Danca olan birinin kayıtları sonraki sürümde gelecek.',
+  }
+};
+
+// ---------- Tilstand ----------
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('tp10_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('tp10_' + k, JSON.stringify(v)); } catch {} },
+};
+const todayKey = d => (d || new Date()).toISOString().slice(0, 10);
+const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return todayKey(d); };
+
+const S = {
+  mode: store.get('mode', 'da'),
+  tab: 'home',
+  filter: 'alle',
+  premium: store.get('premium', false),
+  // Eksempeldata første gang: to lektioner klaret, 3 dages streak.
+  done: store.get('done', [1, 2]),
+  days: store.get('days', [daysAgo(3), daysAgo(2), daysAgo(1)]),
+  minutes: store.get('minutes', {}),
+  xp: store.get('xp', 60),
+  lesson: null,
+  dialogStep: 0, dialogLog: [],
+};
+const save = () => { store.set('mode', S.mode); store.set('premium', S.premium); store.set('done', S.done); store.set('days', S.days); store.set('minutes', S.minutes); store.set('xp', S.xp); };
+
+function streak() {
+  const set = new Set(S.days);
+  let n = 0, i = set.has(todayKey()) ? 0 : 1;
+  while (set.has(daysAgo(i))) { n++; i++; }
+  return n;
+}
+const t = () => T[S.mode];
+// I dansk-tilstand er målsproget tyrkisk (indeks 0); i tyrkisk-tilstand er det dansk (indeks 1).
+const target = p => S.mode === 'da' ? p[0] : p[1];
+const native = p => S.mode === 'da' ? p[1] : p[0];
+const lessonName = l => S.mode === 'da' ? l.da : l.tr;
+const isLocked = l => !S.premium && l.id > FREE_LIMIT;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ---------- Lyd ----------
+function speak(text) {
+  try {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const lang = S.mode === 'da' ? 'tr-TR' : 'da-DK';
+    u.lang = lang; u.rate = .85;
+    const v = synth.getVoices().find(v => v.lang && v.lang.replace('_','-').toLowerCase().startsWith(lang.slice(0,2)));
+    if (v) u.voice = v;
+    synth.speak(u);
+  } catch {}
+}
+
+const view = document.getElementById('view');
+const $ = s => document.querySelector(s);
+
+// ---------- Ramme ----------
+function renderChrome() {
+  document.documentElement.lang = S.mode === 'da' ? 'da' : 'tr';
+  
+  $('#appSub').textContent = t().sub;
+  $('#flameSlot').innerHTML = ICON.flame;
+  $('#streakNum').textContent = streak();
+  $('#modeDa').setAttribute('aria-pressed', S.mode === 'da');
+  $('#modeTr').setAttribute('aria-pressed', S.mode === 'tr');
+  const tabs = [['home', ICON.home], ['lessons', ICON.book], ['chat', ICON.chat], ['premium', ICON.star]];
+  $('#tabs').innerHTML = tabs.map(([id, ic], i) =>
+    `<button data-tab="${id}" ${S.tab === id && !S.lesson ? 'aria-current="page"' : ''}>${ic}<span>${t().tabs[i]}</span></button>`).join('');
+  $('#tabs').hidden = !!S.lesson;
+  document.querySelector('.mode').hidden = !!S.lesson;
+}
+
+function render() {
+  renderChrome();
+  if (S.lesson) return renderLesson();
+  ({ home: renderHome, lessons: renderLessons, chat: renderChat, premium: renderPremium })[S.tab]();
+  view.scrollTop = 0;
+}
+
+// ---------- I dag ----------
+function nextLesson() { return LESSONS.find(l => !S.done.includes(l.id)) || LESSONS[0]; }
+
+function lessonRow(l) {
+  const done = S.done.includes(l.id), locked = isLocked(l);
+  const pill = done ? `<span class="pill done">${t().done}</span>` : locked ? `<span class="pill pro">${t().pro}</span>` : `<span class="pill free">${t().free}</span>`;
+  return `<button class="lesson ${done ? 'done' : ''} ${locked ? 'locked' : ''}" data-lesson="${l.id}">
+    <span class="num">${locked ? ICON.lock.replace('<svg', '<svg width="20" height="20"') : l.id}</span>
+    <span><b>${esc(lessonName(l))}</b><small>${THEME_NAME[l.theme][S.mode === 'da' ? 0 : 1]} · ${l.words.length} ${t().words} · 10 min</small></span>
+    ${pill}</button>`;
+}
+
+function renderHome() {
+  const L = nextLesson();
+  const mins = Math.min(10, S.minutes[todayKey()] || 0);
+  const C = 2 * Math.PI * 26, dash = C * mins / 10;
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  const set = new Set(S.days);
+  const week = t().week.map((d, i) => {
+    const key = daysAgo(todayIdx - i);
+    const on = set.has(key);
+    return `<span><i class="${on ? 'on' : ''} ${i === todayIdx ? 'today' : ''}">${on ? ICON.flameW : ''}</i>${d}</span>`;
+  }).join('');
+  const freeLeft = Math.max(0, FREE_LIMIT - S.done.filter(id => id <= FREE_LIMIT).length);
+  const themeCount = th => LESSONS.filter(l => l.theme === th).reduce((n, l) => n + l.words.length, 0);
+
+  view.innerHTML = `
+    <section class="card hero">
+      ${HERO_ART}
+      <span class="eyebrow">${t().todayEyebrow} · ${L.id}/${LESSONS.length}</span>
+      <h2>${esc(lessonName(L))}</h2>
+      <p>${L.words.slice(0, 3).map(w => esc(target(w))).join(' · ')} …</p>
+      <button class="btn white" data-lesson="${L.id}">${isLocked(L) ? t().unlock : t().start}</button>
+    </section>
+    <section class="card">
+      <div class="goal">
+        <svg class="ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="#FDECEE" stroke-width="8"/>${mins ? `<circle cx="32" cy="32" r="26" fill="none" stroke="#D90B1C" stroke-width="8" stroke-linecap="round" stroke-dasharray="${dash} ${C}" transform="rotate(-90 32 32)"/>` : ''}</svg>
+        <div><span class="eyebrow">${t().goal}</span><br><strong>${mins} ${t().min}</strong> <span class="note" style="display:inline">${t().of10}</span></div>
+      </div>
+      <div class="week">${week}</div>
+    </section>
+    <section class="card">
+      <span class="eyebrow">${t().themes}</span>
+      <div class="themes">
+        ${['rejse', 'mad', 'samtale'].map(th => `<button class="theme" data-theme-go="${th}">${ART[th]}${THEME_NAME[th][S.mode === 'da' ? 0 : 1]}<small>${themeCount(th)} ${t().words}</small></button>`).join('')}
+      </div>
+    </section>
+    ${S.premium ? '' : `<p class="note">${freeLeft} ${t().remaining} · ${S.mode === 'da' ? 'Premium fra 59 kr./md.' : 'Premium aylık 59 DKK’dan'}</p>`}
+  `;
+}
+
+// ---------- Lektioner ----------
+function renderLessons() {
+  const f = S.filter;
+  const filters = [['alle', t().all], ['rejse', THEME_NAME.rejse[S.mode === 'da' ? 0 : 1]], ['mad', THEME_NAME.mad[S.mode === 'da' ? 0 : 1]], ['samtale', THEME_NAME.samtale[S.mode === 'da' ? 0 : 1]]];
+  const list = LESSONS.filter(l => f === 'alle' || l.theme === f);
+  view.innerHTML = `
+    <h2>${t().lessonsTitle}</h2>
+    <div class="filters">${filters.map(([k, n]) => `<button data-filter="${k}" aria-pressed="${f === k}">${n}</button>`).join('')}</div>
+    <div class="list">${list.map(lessonRow).join('')}</div>`;
+}
+
+// ---------- Lektionsforløb ----------
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function buildSteps(l) {
+  const steps = [];
+  l.words.forEach(w => steps.push({ kind: 'card', pair: w }));
+  l.sentences.forEach(s => steps.push({ kind: 'card', pair: s, sentence: true }));
+  const pool = l.words.concat(l.sentences);
+  shuffle(l.words).slice(0, 4).forEach((w, i) => {
+    const wrong = shuffle(pool.filter(p => p !== w)).slice(0, 2);
+    steps.push({ kind: i % 2 ? 'listen' : 'quiz', pair: w, opts: shuffle([w, ...wrong]) });
+  });
+  const s = l.sentences[0];
+  steps.push({ kind: 'quiz', pair: s, opts: shuffle([s, ...shuffle(pool.filter(p => p !== s)).slice(0, 2)]) });
+  return steps;
+}
+
+function openLesson(id) {
+  const l = LESSONS.find(x => x.id === id);
+  if (isLocked(l)) return openPaywall(lessonName(l));
+  S.lesson = { l, steps: buildSteps(l), i: 0, right: 0, answered: false, started: Date.now(), heard: null };
+  render();
+}
+
+let tick;
+function renderLesson() {
+  const st = S.lesson, step = st.steps[st.i];
+  clearInterval(tick);
+  if (!step) return renderResult();
+  const pct = Math.round(st.i / st.steps.length * 100);
+  const head = `<div class="progress"><button class="close" id="quit" aria-label="Afslut lektion">×</button><div class="bar"><i style="width:${pct}%"></i></div><span class="timer" id="timer"></span></div>`;
+  let body = '';
+  if (step.kind === 'card') {
+    body = `<section class="card flash">
+      <span class="eyebrow">${t().learn}</span>
+      <div class="word ${step.sentence ? 'sentence' : ''}" lang="${S.mode === 'da' ? 'tr' : 'da'}">${esc(target(step.pair))}</div>
+      <div class="tr">${esc(native(step.pair))}</div>
+      <div class="row">
+        <button class="round" id="play" aria-label="${t().listen}">${ICON.speaker}</button>
+        <button class="round alt" id="mic" aria-label="${t().speak}">${ICON.mic}</button>
+      </div>
+      <div class="say" id="sayBox">${t().sayHint}</div>
+    </section>
+    <p class="note">${t().voiceNote}</p>
+    <div class="spacer"></div>
+    <button class="btn" id="next">${t().next}</button>`;
+  } else {
+    const ask = step.kind === 'listen'
+      ? `<div class="q">${t().quizListen}</div><div class="row"><button class="round" id="play" aria-label="${t().listen}">${ICON.speaker}</button></div>`
+      : `<div class="q">${t().quizTitle} <b lang="${S.mode === 'da' ? 'tr' : 'da'}">${esc(target(step.pair))}</b>?</div>`;
+    const label = p => step.kind === 'listen' ? target(p) : native(p);
+    body = `${ask}
+      <div class="opts">${step.opts.map((o, k) => `<button class="opt" data-opt="${k}">${esc(label(o))}</button>`).join('')}</div>
+      <div id="qfb"></div>
+      <div class="spacer"></div>
+      <button class="btn" id="next" disabled>${t().next}</button>`;
+  }
+  view.innerHTML = `<div class="lessonview">${head}${body}</div>`;
+  const timer = $('#timer');
+  const upd = () => { const s = Math.floor((Date.now() - st.started) / 1000); timer.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+  upd(); tick = setInterval(upd, 1000);
+  if (step.kind === 'listen') setTimeout(() => {}, 0);
+}
+
+function answer(k) {
+  const st = S.lesson, step = st.steps[st.i];
+  if (st.answered) return;
+  st.answered = true;
+  const ok = step.opts[k] === step.pair;
+  if (ok) st.right++;
+  document.querySelectorAll('.opt').forEach((b, j) => {
+    b.disabled = true;
+    if (step.opts[j] === step.pair) b.classList.add('right');
+    else if (j === k) b.classList.add('wrong');
+  });
+  const label = step.kind === 'listen' ? target(step.pair) : native(step.pair);
+  $('#qfb').innerHTML = ok
+    ? `<div class="feedback ok">${t().correct} ${esc(target(step.pair))} = ${esc(native(step.pair))}</div>`
+    : `<div class="feedback info">${t().wrong}: <b>${esc(label)}</b></div>`;
+  $('#next').disabled = false;
+  speak(target(step.pair));
+}
+
+function similarity(a, b) {
+  const n = s => s.toLocaleLowerCase(S.mode === 'da' ? 'tr' : 'da').replace(/[^\p{L}\s]/gu, '').trim();
+  a = n(a); b = n(b);
+  const m = a.length, k = b.length, d = Array.from({ length: m + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= k; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= k; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return Math.max(0, Math.round(100 * (1 - d[m][k] / Math.max(m, k, 1))));
+}
+
+function showSelfRate() {
+  $('#sayBox').innerHTML = `<div class="feedback info">${t().micNo}</div>
+    <div class="selfrate" style="margin-top:8px">${t().rate.map(r => `<button data-rate>${r}</button>`).join('')}</div>`;
+}
+
+function listen() {
+  const step = S.lesson.steps[S.lesson.i];
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return showSelfRate();
+  let rec;
+  try {
+    rec = new SR();
+    rec.lang = S.mode === 'da' ? 'tr-TR' : 'da-DK';
+    rec.maxAlternatives = 3;
+    const btn = $('#mic'); btn.classList.add('rec');
+    rec.onresult = e => {
+      btn.classList.remove('rec');
+      const said = e.results[0][0].transcript;
+      const score = similarity(said, target(step.pair));
+      $('#sayBox').innerHTML = S.premium
+        ? `<div class="feedback ${score >= 70 ? 'ok' : 'info'}">${t().heard}: “${esc(said)}” · ${score}% ${t().match}</div>`
+        : `<div class="feedback info">${t().heard}: “${esc(said)}”. ${t().proFeedback}</div>`;
+    };
+    rec.onerror = () => { btn.classList.remove('rec'); showSelfRate(); };
+    rec.onend = () => btn.classList.remove('rec');
+    rec.start();
+  } catch { showSelfRate(); }
+}
+
+function renderResult() {
+  const st = S.lesson;
+  const quizN = st.steps.filter(s => s.kind !== 'card').length;
+  const mins = Math.max(1, Math.round((Date.now() - st.started) / 60000));
+  const gained = 10 + st.right * 5;
+  const before = streak();
+  if (!S.done.includes(st.l.id)) S.done.push(st.l.id);
+  if (!S.days.includes(todayKey())) S.days.push(todayKey());
+  S.minutes[todayKey()] = (S.minutes[todayKey()] || 0) + mins;
+  S.xp += gained;
+  save();
+  const after = streak();
+  renderChrome();
+  if (after > before) { const b = $('#streakBadge'); b.classList.remove('pulse'); void b.offsetWidth; b.classList.add('pulse'); }
+  view.innerHTML = `<div class="lessonview">
+    <section class="card result">
+      <svg width="72" height="72" viewBox="0 0 24 24" aria-hidden="true">${ICON.flame.replace(/^<svg[^>]*>|<\/svg>$/g, '')}</svg>
+      <h2>${t().finished}</h2>
+      <div class="big">${after} ${S.mode === 'da' ? 'dage' : 'gün'}</div>
+      <div class="stats">
+        <div><b>+${gained}</b><small>${t().xp}</small></div>
+        <div><b>${st.right}/${quizN}</b><small>${t().score}</small></div>
+        <div><b>${mins}</b><small>min</small></div>
+      </div>
+    </section>
+    <div class="spacer"></div>
+    <button class="btn" id="finish">${t().backHome}</button>
+  </div>`;
+}
+
+// ---------- Samtaletræning ----------
+function renderChat() {
+  const da = S.mode === 'da';
+  const intro = `<h2>${da ? 'Samtaletræning' : 'Sohbet pratiği'}</h2>
+    <p class="note">${da ? 'Scene: Du bestiller te på en café i Istanbul. Vælg det rigtige svar.' : 'Sahne: Kopenhag’da bir kafede çay sipariş ediyorsun. Doğru cevabı seç.'}</p>`;
+  if (!S.premium) {
+    view.innerHTML = `${intro}
+      <div class="chat">
+        <div class="bubble them" lang="${da ? 'tr' : 'da'}">${esc(target(DIALOG[0].them))}<small>${esc(native(DIALOG[0].them))}</small></div>
+        <div class="bubble me" style="opacity:.4">· · ·</div>
+      </div>
+      <section class="card lockbox">${ICON.lock}<b>${da ? 'Samtaletræning er en del af Premium' : 'Sohbet pratiği Premium’a dahildir'}</b>
+      <p class="note">${da ? 'Øv rigtige situationer: café, taxa, hotel og marked.' : 'Gerçek durumları çalış: kafe, taksi, otel ve pazar.'}</p>
+      <button class="btn" data-paywall>${t().unlock}</button></section>`;
+    return;
+  }
+  const log = S.dialogLog.map(m => `<div class="bubble ${m.who}" lang="${da ? 'tr' : 'da'}">${esc(target(m.p))}<small>${esc(native(m.p))}</small></div>`).join('');
+  const cur = DIALOG[S.dialogStep];
+  view.innerHTML = `${intro}<div class="chat">${log}${cur ? `<div class="bubble them" lang="${da ? 'tr' : 'da'}">${esc(target(cur.them))}<small>${esc(native(cur.them))}</small></div>` : ''}</div>
+    ${cur ? `<div class="opts">${cur.replies.map((r, k) => `<button class="opt" data-reply="${k}">${esc(target(r))}</button>`).join('')}</div><div id="qfb"></div>`
+          : `<div class="feedback ok">${da ? 'Samtalen er gennemført. Çok güzel!' : 'Sohbet tamamlandı. Çok iyi!'}</div><button class="btn ghost" id="restartChat">${da ? 'Start forfra' : 'Baştan başla'}</button>`}`;
+  if (cur) speak(target(cur.them));
+}
+
+function reply(k) {
+  const cur = DIALOG[S.dialogStep], r = cur.replies[k];
+  if (!r[2]) {
+    document.querySelectorAll('[data-reply]')[k].classList.add('wrong');
+    $('#qfb').innerHTML = `<div class="feedback info">${esc(native(r))}. ${S.mode === 'da' ? 'Passer ikke her. Prøv igen.' : 'Burada uymuyor. Tekrar dene.'}</div>`;
+    return;
+  }
+  S.dialogLog.push({ who: 'them', p: cur.them }, { who: 'me', p: r });
+  S.dialogStep++;
+  renderChat();
+}
+
+// ---------- Premium ----------
+let plan = 'year';
+function premiumHTML(reason) {
+  const da = S.mode === 'da';
+  const rows = da
+    ? [['Lektion 1–5', 1, 1], ['Alle ' + LESSONS.length + ' lektioner + nye hver uge', 0, 1], ['Offline brug', 0, 1], ['Udtalefeedback', 0, 1], ['Samtaletræning', 0, 1]]
+    : [['Ders 1–5', 1, 1], ['Tüm ' + LESSONS.length + ' ders + her hafta yenileri', 0, 1], ['Çevrimdışı kullanım', 0, 1], ['Telaffuz geri bildirimi', 0, 1], ['Sohbet pratiği', 0, 1]];
+  const mark = v => v ? '<span class="yes">✓</span>' : '<span class="no">–</span>';
+  return `
+    ${reason ? `<span class="eyebrow">${t().locked}: ${esc(reason)}</span>` : ''}
+    <h2 id="sheetTitle">${S.premium ? (da ? 'Du har Premium' : 'Premium aktif') : (da ? 'Lær hele vejen med Premium' : 'Premium ile sonuna kadar öğren')}</h2>
+    <div class="plans" role="group" aria-label="Abonnement">
+      <button class="plan" data-plan="month" aria-pressed="${plan === 'month'}"><small>${da ? 'Månedlig' : 'Aylık'}</small><b>59 kr.</b><small>${da ? 'pr. måned' : 'aylık'}</small></button>
+      <button class="plan" data-plan="year" aria-pressed="${plan === 'year'}"><span class="save">${da ? 'Spar 44 %' : '%44 tasarruf'}</span><small>${da ? 'Årlig' : 'Yıllık'}</small><b>399 kr.</b><small>${da ? 'ca. 33 kr./md.' : 'aylık ~33 DKK'}</small></button>
+    </div>
+    <table class="compare"><thead><tr><th></th><th>${t().free}</th><th>Premium</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${r[0]}</td><td>${mark(r[1])}</td><td>${mark(r[2])}</td></tr>`).join('')}</tbody></table>
+    <button class="btn" id="togglePremium">${S.premium ? (da ? 'Slå demo-Premium fra' : 'Demo Premium’u kapat') : (da ? 'Prøv Premium (demo)' : 'Premium’u dene (demo)')}</button>
+    <p class="note">${da ? 'Prototype: knappen slår Premium til uden betaling, så du kan se de låste funktioner.' : 'Prototip: düğme ödeme olmadan Premium’u açar, böylece kilitli özellikleri görebilirsin.'}</p>`;
+}
+function renderPremium() { view.innerHTML = `<section class="card" style="gap:14px">${premiumHTML()}</section>`; }
+function openPaywall(reason) {
+  $('#sheetPanel').innerHTML = premiumHTML(reason) + `<button class="btn ghost" id="closeSheet">${S.mode === 'da' ? 'Ikke nu' : 'Şimdi değil'}</button>`;
+  $('#sheet').hidden = false;
+  $('#togglePremium').focus();
+}
+function closeSheet() { $('#sheet').hidden = true; }
+
+// ---------- Hændelser ----------
+document.addEventListener('click', e => {
+  const el = e.target.closest('button');
+  if (!el) { if (e.target.id === 'sheet') closeSheet(); return; }
+  const d = el.dataset;
+  if (d.tab) { S.tab = d.tab; render(); }
+  else if (d.lesson) { closeSheet(); openLesson(+d.lesson); }
+  else if (d.filter) { S.filter = d.filter; render(); }
+  else if (d.themeGo) { S.tab = 'lessons'; S.filter = d.themeGo; render(); }
+  else if (d.opt != null) answer(+d.opt);
+  else if (d.reply != null) reply(+d.reply);
+  else if (d.plan) { plan = d.plan; document.querySelectorAll('[data-plan]').forEach(b => b.setAttribute('aria-pressed', b.dataset.plan === plan)); }
+  else if (d.paywall != null) openPaywall();
+  else if (d.rate != null) { el.parentElement.querySelectorAll('button').forEach(b => b.style.borderColor = ''); el.style.borderColor = 'var(--red)'; }
+  else switch (el.id) {
+    case 'modeDa': S.mode = 'da'; S.dialogStep = 0; S.dialogLog = []; save(); render(); break;
+    case 'modeTr': S.mode = 'tr'; S.dialogStep = 0; S.dialogLog = []; save(); render(); break;
+    case 'play': speak(target(S.lesson.steps[S.lesson.i].pair)); break;
+    case 'mic': listen(); break;
+    case 'next': S.lesson.i++; S.lesson.answered = false; renderLesson(); break;
+    case 'quit': case 'finish': clearInterval(tick); S.lesson = null; S.tab = 'home'; render(); break;
+    case 'togglePremium': S.premium = !S.premium; save(); closeSheet(); render(); break;
+    case 'closeSheet': closeSheet(); break;
+    case 'restartChat': S.dialogStep = 0; S.dialogLog = []; renderChat(); break;
+  }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
+try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch {}
+
+render();
+
+// ---------- App på hjemmeskærmen ----------
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+(function installHint() {
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const mobile = matchMedia('(max-width: 759px)').matches;
+  const dismissed = store.get('installDismissed', false);
+  if (standalone || !mobile || dismissed) return;
+  const box = $('#install'), how = $('#installHow'), go = $('#installGo');
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const shareIco = '<svg class="share-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4M5 12v8h14v-8"/></svg>';
+  if (ios) { how.innerHTML = `Tryk på ${shareIco} Del og vælg <b style="display:inline">Føj til hjemmeskærm</b>.`; box.hidden = false; }
+  else { how.textContent = 'Tryk på ⋮ i browseren og vælg "Føj til startskærm".'; box.hidden = false; }
+  let deferred;
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; how.textContent = 'Så åbner den som en app, også offline.'; go.hidden = false; box.hidden = false; });
+  go.onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice.catch(() => {}); deferred = null; box.hidden = true; };
+  $('#installX').onclick = () => { box.hidden = true; store.set('installDismissed', true); };
+  addEventListener('appinstalled', () => { box.hidden = true; });
+})();
+(function qr() {
+  if (!matchMedia('(min-width: 760px)').matches) return;
+  if (typeof qrcode !== 'function') { $('.desk .qr').hidden = true; return; }
+  try { const q = qrcode(0, 'M'); q.addData(location.href.split('#')[0]); q.make(); $('#qr').innerHTML = q.createImgTag(4, 0); } catch {}
+})();
+</script>
+</body>
+</html>
