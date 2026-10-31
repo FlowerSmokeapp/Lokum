@@ -1,10 +1,10 @@
-# Lokum – tyrkisk på 10 min
+# Lokum – Turkish in 10 min
 
-Sprogapp: tyrkisk for danskere (og dansk for tyrkere) på 10 minutter om dagen.
-Daglige lektioner med ord og sætninger, oplæsning, udtaleøvelse, quizzer, ordforråd efter tema og en dagsstreak.
+A language app for learning Turkish (or English, for Turkish speakers) in 10 minutes a day.
+Daily lessons with words and phrases, audio, pronunciation practice, quizzes, vocabulary by topic and a daily streak.
 
-- Åbn på mobil, og tilføj til hjemmeskærmen (iPhone: Del → Føj til hjemmeskærm. Android: ⋮ → Føj til startskærm).
-- På computer vises appen i en telefonramme med en QR-kode til mobilen.
-- Virker offline, når den er åbnet én gang.
+- Open it on your phone and add it to the home screen (iPhone: Share → Add to Home Screen. Android: ⋮ → Add to Home screen).
+- On a computer the app is shown inside a phone frame.
+- Works offline once it has been opened.
 
-Ren HTML/CSS/JS uden byggetrin, hostet med GitHub Pages.
+Plain HTML/CSS/JS with no build step, hosted on GitHub Pages.

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Lokum – tyrkisk på 10 min</title>
-<meta name="description" content="Lær tyrkisk på 10 minutter om dagen. Ord, sætninger, udtale og quizzer.">
+<title>Lokum – Turkish in 10 min</title>
+<meta name="description" content="Learn Turkish in 10 minutes a day. Words, phrases, pronunciation and quizzes.">
 <meta name="theme-color" content="#D90B1C">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -98,6 +98,7 @@ main > * { flex-shrink: 0; }
 .phone { width: 100%; max-width: 440px; height: 100%; }
 main { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 18px; }
 
+.tabs[hidden] { display: none; }
 .tabs { padding-bottom: env(safe-area-inset-bottom); display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); background: var(--paper); }
 .tabs button {
   border: 0; background: none; padding: 9px 4px 11px; font-size: 12px; color: var(--muted);
@@ -261,19 +262,19 @@ main { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: 
       <img src="icons/icon-192.png" width="36" height="36" alt="" style="border-radius:9px;box-shadow:0 0 0 2px #fff">
       <h1 id="appTitle">Lokum<small id="appSub">Hver dag. 10 minutter.</small></h1>
     </div>
-    <div class="streak" id="streakBadge" title="Dagsstreak"><span id="flameSlot"></span><span id="streakNum">0</span></div>
+    <div class="streak" id="streakBadge" title="Daily streak"><span id="flameSlot"></span><span id="streakNum">0</span></div>
   </header>
-  <div class="mode" role="group" aria-label="Sprogretning">
-    <button id="modeDa" aria-pressed="true">Tyrkisk for danskere</button>
-    <button id="modeTr" aria-pressed="false">Türkler için Danca</button>
+  <div class="mode" role="group" aria-label="Language direction">
+    <button id="modeDa" aria-pressed="true">Learn Turkish</button>
+    <button id="modeTr" aria-pressed="false">İngilizce öğren</button>
   </div>
   <main id="view"></main>
   <nav class="tabs" id="tabs"></nav>
   <div class="install" id="install" hidden>
     <img src="icons/icon-192.png" alt="">
-    <div style="flex:1"><b>Læg Lokum på hjemmeskærmen</b><span id="installHow">Så åbner den som en app.</span></div>
-    <button class="go" id="installGo" hidden>Tilføj</button>
-    <button class="x" id="installX" aria-label="Luk">×</button>
+    <div style="flex:1"><b>Add Lokum to your home screen</b><span id="installHow">It opens just like an app.</span></div>
+    <button class="go" id="installGo" hidden>Add</button>
+    <button class="x" id="installX" aria-label="Close">×</button>
   </div>
   <div class="sheet" id="sheet" hidden>
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" id="sheetPanel"></div>
@@ -303,86 +304,86 @@ const ART = {
 const HERO_ART = '<svg class="art" viewBox="0 0 120 110" aria-hidden="true"><path d="M20 110V70c0-10 8-18 18-18s18 8 18 18v40z" fill="#fff" opacity=".18"/><path d="M60 110V40c0-14 12-26 26-26s26 12 26 26v70z" fill="#fff" opacity=".22"/><path d="M86 2v12M84 6h4" stroke="#fff" stroke-width="2" opacity=".5"/><circle cx="40" cy="30" r="12" fill="#fff" opacity=".9"/><circle cx="44.5" cy="30" r="9.6" fill="#D90B1C"/><path d="M58 24l1.5 4.3h4.5l-3.6 2.7 1.3 4.3L58 32.6l-3.7 2.7 1.3-4.3-3.6-2.7h4.5z" fill="#fff" opacity=".9"/></svg>';
 
 // ---------- Indhold ----------
-// Hvert par: [tyrkisk, dansk]. Retningen vendes i "Danca"-tilstand.
+// Each pair: [Turkish, English]. The direction flips in "English for Turks" mode.
 const LESSONS = [
-  { id:1, theme:'samtale', da:'Hilsner', tr:'Selamlaşma',
-    words:[['Merhaba','Hej'],['Günaydın','Godmorgen'],['Teşekkür ederim','Tak'],['Evet','Ja'],['Hayır','Nej']],
-    sentences:[['Nasılsın?','Hvordan har du det?'],['İyiyim, teşekkürler.','Jeg har det godt, tak.']] },
-  { id:2, theme:'samtale', da:'Præsenter dig selv', tr:'Kendini tanıt',
-    words:[['Ben','Jeg'],['Sen','Du'],['Adın ne?','Hvad hedder du?'],['Memnun oldum','Rart at møde dig'],['Nerelisin?','Hvor er du fra?']],
-    sentences:[['Benim adım Anna.','Mit navn er Anna.'],['Danimarkalıyım.','Jeg er dansk.']] },
-  { id:3, theme:'mad', da:'På caféen', tr:'Kafede',
-    words:[['Su','Vand'],['Çay','Te'],['Kahve','Kaffe'],['Ekmek','Brød'],['Lütfen','Vær så venlig']],
-    sentences:[['Bir çay, lütfen.','En te, tak.'],['Hesap, lütfen.','Regningen, tak.']] },
-  { id:4, theme:'samtale', da:'Tal fra 1 til 5', tr:'1’den 5’e sayılar',
-    words:[['Bir','En'],['İki','To'],['Üç','Tre'],['Dört','Fire'],['Beş','Fem']],
-    sentences:[['Kaç lira?','Hvor mange lira?'],['Beş lira.','Fem lira.']] },
-  { id:5, theme:'rejse', da:'I lufthavnen', tr:'Havalimanında',
-    words:[['Havalimanı','Lufthavn'],['Bilet','Billet'],['Pasaport','Pas'],['Otel','Hotel'],['Taksi','Taxa']],
-    sentences:[['Otel nerede?','Hvor er hotellet?'],['Taksi çağırır mısınız?','Kan De ringe efter en taxa?']] },
-  { id:6, theme:'mad', da:'På restaurant', tr:'Restoranda',
-    words:[['Menü','Menu'],['Et','Kød'],['Tavuk','Kylling'],['Balık','Fisk'],['Lezzetli','Lækker']],
-    sentences:[['Çok lezzetli!','Meget lækkert!'],['Vejetaryen yemek var mı?','Er der vegetarisk mad?']] },
-  { id:7, theme:'rejse', da:'Find vej', tr:'Yol bulma',
-    words:[['Sağ','Højre'],['Sol','Venstre'],['Düz','Ligeud'],['Yakın','Tæt på'],['Uzak','Langt væk']],
-    sentences:[['Sağa dönün.','Drej til højre.'],['Uzak mı?','Er det langt væk?']] },
-  { id:8, theme:'mad', da:'På markedet', tr:'Pazarda',
-    words:[['Elma','Æble'],['Domates','Tomat'],['Peynir','Ost'],['Ne kadar?','Hvad koster det?'],['Pahalı','Dyr']],
-    sentences:[['Bu ne kadar?','Hvad koster den her?'],['Çok pahalı!','Meget dyrt!']] },
-  { id:9, theme:'samtale', da:'Vejr og small talk', tr:'Hava ve sohbet',
-    words:[['Hava','Vejr'],['Güzel','Dejlig'],['Sıcak','Varm'],['Bugün','I dag'],['Yarın','I morgen']],
-    sentences:[['Bugün hava çok güzel.','Vejret er dejligt i dag.'],['Yarın görüşürüz.','Vi ses i morgen.']] },
-  { id:10, theme:'rejse', da:'På hotellet', tr:'Otelde',
-    words:[['Oda','Værelse'],['Anahtar','Nøgle'],['Kahvaltı','Morgenmad'],['Rezervasyon','Reservation'],['Gece','Nat']],
-    sentences:[['Rezervasyonum var.','Jeg har en reservation.'],['Kahvaltı saat kaçta?','Hvornår er der morgenmad?']] },
-  { id:11, theme:'mad', da:'Smag og krydderier', tr:'Tatlar ve baharatlar',
-    words:[['Tatlı','Sød'],['Acı','Stærk'],['Tuz','Salt'],['Şeker','Sukker'],['Su böreği','Vandbørek']],
-    sentences:[['Acı mı?','Er det stærkt?'],['Şekersiz, lütfen.','Uden sukker, tak.']] },
-  { id:12, theme:'rejse', da:'Bus og færge', tr:'Otobüs ve vapur',
-    words:[['Otobüs','Bus'],['Vapur','Færge'],['Durak','Stoppested'],['İskele','Anløbsbro'],['Saat','Klokken']],
-    sentences:[['Vapur kaçta kalkıyor?','Hvornår sejler færgen?'],['Bu otobüs Taksim’e gider mi?','Kører denne bus til Taksim?']] },
+  { id:1, theme:'samtale', da:'Greetings', tr:'Selamlaşma',
+    words:[['Merhaba','Hello'],['Günaydın','Good morning'],['Teşekkür ederim','Thank you'],['Evet','Yes'],['Hayır','No']],
+    sentences:[['Nasılsın?','How are you?'],['İyiyim, teşekkürler.','I’m fine, thanks.']] },
+  { id:2, theme:'samtale', da:'Introduce yourself', tr:'Kendini tanıt',
+    words:[['Ben','I'],['Sen','You'],['Adın ne?','What’s your name?'],['Memnun oldum','Nice to meet you'],['Nerelisin?','Where are you from?']],
+    sentences:[['Benim adım Anna.','My name is Anna.'],['İngiltereliyim.','I’m from England.']] },
+  { id:3, theme:'mad', da:'At the café', tr:'Kafede',
+    words:[['Su','Water'],['Çay','Tea'],['Kahve','Coffee'],['Ekmek','Bread'],['Lütfen','Please']],
+    sentences:[['Bir çay, lütfen.','A tea, please.'],['Hesap, lütfen.','The bill, please.']] },
+  { id:4, theme:'samtale', da:'Numbers 1 to 5', tr:'1’den 5’e sayılar',
+    words:[['Bir','One'],['İki','Two'],['Üç','Three'],['Dört','Four'],['Beş','Five']],
+    sentences:[['Kaç lira?','How many lira?'],['Beş lira.','Five lira.']] },
+  { id:5, theme:'rejse', da:'At the airport', tr:'Havalimanında',
+    words:[['Havalimanı','Airport'],['Bilet','Ticket'],['Pasaport','Passport'],['Otel','Hotel'],['Taksi','Taxi']],
+    sentences:[['Otel nerede?','Where is the hotel?'],['Taksi çağırır mısınız?','Could you call a taxi?']] },
+  { id:6, theme:'mad', da:'At the restaurant', tr:'Restoranda',
+    words:[['Menü','Menu'],['Et','Meat'],['Tavuk','Chicken'],['Balık','Fish'],['Lezzetli','Delicious']],
+    sentences:[['Çok lezzetli!','Very tasty!'],['Vejetaryen yemek var mı?','Is there vegetarian food?']] },
+  { id:7, theme:'rejse', da:'Finding your way', tr:'Yol bulma',
+    words:[['Sağ','Right'],['Sol','Left'],['Düz','Straight on'],['Yakın','Near'],['Uzak','Far']],
+    sentences:[['Sağa dönün.','Turn right.'],['Uzak mı?','Is it far?']] },
+  { id:8, theme:'mad', da:'At the market', tr:'Pazarda',
+    words:[['Elma','Apple'],['Domates','Tomato'],['Peynir','Cheese'],['Ne kadar?','How much?'],['Pahalı','Expensive']],
+    sentences:[['Bu ne kadar?','How much is this?'],['Çok pahalı!','Too expensive!']] },
+  { id:9, theme:'samtale', da:'Weather and small talk', tr:'Hava ve sohbet',
+    words:[['Hava','Weather'],['Güzel','Lovely'],['Sıcak','Hot'],['Bugün','Today'],['Yarın','Tomorrow']],
+    sentences:[['Bugün hava çok güzel.','The weather is lovely today.'],['Yarın görüşürüz.','See you tomorrow.']] },
+  { id:10, theme:'rejse', da:'At the hotel', tr:'Otelde',
+    words:[['Oda','Room'],['Anahtar','Key'],['Kahvaltı','Breakfast'],['Rezervasyon','Reservation'],['Gece','Night']],
+    sentences:[['Rezervasyonum var.','I have a reservation.'],['Kahvaltı saat kaçta?','What time is breakfast?']] },
+  { id:11, theme:'mad', da:'Tastes and spices', tr:'Tatlar ve baharatlar',
+    words:[['Tatlı','Sweet'],['Acı','Spicy'],['Tuz','Salt'],['Şeker','Sugar'],['Su böreği','Water börek']],
+    sentences:[['Acı mı?','Is it spicy?'],['Şekersiz, lütfen.','No sugar, please.']] },
+  { id:12, theme:'rejse', da:'Bus and ferry', tr:'Otobüs ve vapur',
+    words:[['Otobüs','Bus'],['Vapur','Ferry'],['Durak','Bus stop'],['İskele','Pier'],['Saat','O’clock']],
+    sentences:[['Vapur kaçta kalkıyor?','What time does the ferry leave?'],['Bu otobüs Taksim’e gider mi?','Does this bus go to Taksim?']] },
 ];
 const FREE_LIMIT = 5;
-const THEME_NAME = { samtale:['Samtale','Sohbet'], mad:['Mad','Yemek'], rejse:['Rejse','Seyahat'] };
+const THEME_NAME = { samtale:['Conversation','Sohbet'], mad:['Food','Yemek'], rejse:['Travel','Seyahat'] };
 
 const DIALOG = [
-  { them:['Hoş geldiniz! Ne alırsınız?','Velkommen! Hvad skal det være?'],
-    replies:[ ['Bir çay, lütfen.','En te, tak.', true], ['Günaydın, hayır.','Godmorgen, nej.', false], ['Otel nerede?','Hvor er hotellet?', false] ] },
-  { them:['Şekerli mi, şekersiz mi?','Med eller uden sukker?'],
-    replies:[ ['Şekersiz, lütfen.','Uden sukker, tak.', true], ['Beş lira.','Fem lira.', false], ['Benim adım Anna.','Mit navn er Anna.', false] ] },
-  { them:['Buyurun, çayınız.','Værsgo, din te.'],
-    replies:[ ['Teşekkür ederim! Ne kadar?','Tak! Hvad koster det?', true], ['Sağa dönün.','Drej til højre.', false], ['Yarın görüşürüz.','Vi ses i morgen.', false] ] },
-  { them:['On lira. İyi günler!','Ti lira. Hav en god dag!'],
-    replies:[ ['Size de iyi günler!','I lige måde, hav en god dag!', true], ['Hayır.','Nej.', false], ['Uzak mı?','Er det langt væk?', false] ] },
+  { them:['Hoş geldiniz! Ne alırsınız?','Welcome! What can I get you?'],
+    replies:[ ['Bir çay, lütfen.','A tea, please.', true], ['Günaydın, hayır.','Good morning, no.', false], ['Otel nerede?','Where is the hotel?', false] ] },
+  { them:['Şekerli mi, şekersiz mi?','With or without sugar?'],
+    replies:[ ['Şekersiz, lütfen.','No sugar, please.', true], ['Beş lira.','Five lira.', false], ['Benim adım Anna.','My name is Anna.', false] ] },
+  { them:['Buyurun, çayınız.','Here’s your tea.'],
+    replies:[ ['Teşekkür ederim! Ne kadar?','Thank you! How much is it?', true], ['Sağa dönün.','Turn right.', false], ['Yarın görüşürüz.','See you tomorrow.', false] ] },
+  { them:['On lira. İyi günler!','Ten lira. Have a nice day!'],
+    replies:[ ['Size de iyi günler!','You too, have a nice day!', true], ['Hayır.','No.', false], ['Uzak mı?','Is it far?', false] ] },
 ];
 
 // ---------- UI-tekster (dansk / tyrkisk) ----------
 const T = {
   da: {
-    sub:'Tyrkisk på 10 min om dagen', tabs:['I dag','Lektioner','Samtale','Premium'],
-    todayEyebrow:'Dagens lektion', start:'Start lektion', goal:'Dagsmål', min:'min i dag', of10:'af 10 minutter',
-    week:['M','T','O','T','F','L','S'], themes:'Ordforråd efter tema', words:'ord', lessonsTitle:'Alle lektioner',
-    all:'Alle', free:'Gratis', pro:'Premium', done:'Klaret', learn:'Lær', listen:'Lyt', speak:'Sig det',
-    next:'Videre', check:'Tjek', quizTitle:'Hvad betyder', quizListen:'Lyt og vælg det rigtige ord',
-    correct:'Rigtigt!', wrong:'Det rigtige svar er', finished:'Lektion klaret!', xp:'XP', score:'rigtige', streak:'dages streak',
-    backHome:'Tilbage til forsiden', sayHint:'Tryk på mikrofonen og sig ordet højt',
-    micNo:'Mikrofonen er ikke tilgængelig. Giv adgang i browserens indstillinger, eller sig ordet højt og vurder dig selv:',
-    rate:['Svært','Næsten','Sikkert'], heard:'Vi hørte', match:'match', proFeedback:'Detaljeret udtalefeedback kræver Premium.',
-    locked:'Låst', unlock:'Lås op med Premium', remaining:'gratis lektioner tilbage',
-    voiceNote:'Oplæsningen bruger telefonens tyrkiske stemme. Optagelser af en modersmålstaler kommer i en senere version.',
+    sub:'Turkish in 10 min a day', tabs:['Today','Lessons','Chat','Premium'],
+    todayEyebrow:'Today’s lesson', start:'Start lesson', goal:'Daily goal', min:'min today', of10:'of 10 minutes',
+    week:['M','T','W','T','F','S','S'], themes:'Vocabulary by topic', words:'words', lessonsTitle:'All lessons',
+    all:'All', free:'Free', pro:'Premium', done:'Done', learn:'Learn', listen:'Listen', speak:'Say it',
+    next:'Continue', check:'Check', quizTitle:'What does', quizMean:'mean', quizListen:'Listen and pick the right word',
+    correct:'Correct!', wrong:'The right answer is', finished:'Lesson complete!', xp:'XP', score:'correct', streak:'day streak',
+    backHome:'Back to home', sayHint:'Tap the microphone and say the word out loud',
+    micNo:'The microphone isn’t available. Allow it in your browser settings, or say the word out loud and rate yourself:',
+    rate:['Hard','Almost','Got it'], heard:'We heard', match:'match', proFeedback:'Detailed pronunciation feedback needs Premium.',
+    locked:'Locked', unlock:'Unlock with Premium', remaining:'free lessons left',
+    voiceNote:'Audio uses your phone’s Turkish voice. Recordings by a native speaker are coming in a later version.',
   },
   tr: {
-    sub:'Günde 10 dakikada Danca', tabs:['Bugün','Dersler','Sohbet','Premium'],
+    sub:'Günde 10 dakikada İngilizce', tabs:['Bugün','Dersler','Sohbet','Premium'],
     todayEyebrow:'Günün dersi', start:'Derse başla', goal:'Günlük hedef', min:'dk bugün', of10:'10 dakikadan',
     week:['Pt','Sa','Ça','Pe','Cu','Ct','Pa'], themes:'Temaya göre kelimeler', words:'kelime', lessonsTitle:'Tüm dersler',
     all:'Tümü', free:'Ücretsiz', pro:'Premium', done:'Tamam', learn:'Öğren', listen:'Dinle', speak:'Söyle',
-    next:'Devam', check:'Kontrol', quizTitle:'Bunun anlamı ne', quizListen:'Dinle ve doğru kelimeyi seç',
+    next:'Devam', check:'Kontrol', quizTitle:'', quizMean:'ne demek', quizListen:'Dinle ve doğru kelimeyi seç',
     correct:'Doğru!', wrong:'Doğru cevap', finished:'Ders tamamlandı!', xp:'XP', score:'doğru', streak:'günlük seri',
     backHome:'Ana sayfaya dön', sayHint:'Mikrofona dokun ve kelimeyi yüksek sesle söyle',
     micNo:'Mikrofon kullanılamıyor. Tarayıcı ayarlarından izin ver ya da kelimeyi yüksek sesle söyle ve kendini değerlendir:',
     rate:['Zor','Neredeyse','Kolay'], heard:'Duyduğumuz', match:'eşleşme', proFeedback:'Ayrıntılı telaffuz geri bildirimi Premium gerektirir.',
     locked:'Kilitli', unlock:'Premium ile aç', remaining:'ücretsiz ders kaldı',
-    voiceNote:'Seslendirme telefonun Danca sesini kullanır. Anadili Danca olan birinin kayıtları sonraki sürümde gelecek.',
+    voiceNote:'Seslendirme telefonun İngilizce sesini kullanır. Anadili İngilizce olan birinin kayıtları sonraki sürümde gelecek.',
   }
 };
 
@@ -430,7 +431,7 @@ function speak(text) {
     if (!synth) return;
     synth.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    const lang = S.mode === 'da' ? 'tr-TR' : 'da-DK';
+    const lang = S.mode === 'da' ? 'tr-TR' : 'en-GB';
     u.lang = lang; u.rate = .85;
     const v = synth.getVoices().find(v => v.lang && v.lang.replace('_','-').toLowerCase().startsWith(lang.slice(0,2)));
     if (v) u.voice = v;
@@ -443,7 +444,7 @@ const $ = s => document.querySelector(s);
 
 // ---------- Ramme ----------
 function renderChrome() {
-  document.documentElement.lang = S.mode === 'da' ? 'da' : 'tr';
+  document.documentElement.lang = S.mode === 'da' ? 'en' : 'tr';
   
   $('#appSub').textContent = t().sub;
   $('#flameSlot').innerHTML = ICON.flame;
@@ -511,7 +512,7 @@ function renderHome() {
         ${['rejse', 'mad', 'samtale'].map(th => `<button class="theme" data-theme-go="${th}">${ART[th]}${THEME_NAME[th][S.mode === 'da' ? 0 : 1]}<small>${themeCount(th)} ${t().words}</small></button>`).join('')}
       </div>
     </section>
-    ${S.premium ? '' : `<p class="note">${freeLeft} ${t().remaining} · ${S.mode === 'da' ? 'Premium fra 59 kr./md.' : 'Premium aylık 59 DKK’dan'}</p>`}
+    ${S.premium ? '' : `<p class="note">${freeLeft} ${t().remaining} · ${S.mode === 'da' ? 'Premium from DKK 59/month' : 'Premium aylık 59 DKK’dan'}</p>`}
   `;
 }
 
@@ -556,12 +557,12 @@ function renderLesson() {
   clearInterval(tick);
   if (!step) return renderResult();
   const pct = Math.round(st.i / st.steps.length * 100);
-  const head = `<div class="progress"><button class="close" id="quit" aria-label="Afslut lektion">×</button><div class="bar"><i style="width:${pct}%"></i></div><span class="timer" id="timer"></span></div>`;
+  const head = `<div class="progress"><button class="close" id="quit" aria-label="Quit lesson">×</button><div class="bar"><i style="width:${pct}%"></i></div><span class="timer" id="timer"></span></div>`;
   let body = '';
   if (step.kind === 'card') {
     body = `<section class="card flash">
       <span class="eyebrow">${t().learn}</span>
-      <div class="word ${step.sentence ? 'sentence' : ''}" lang="${S.mode === 'da' ? 'tr' : 'da'}">${esc(target(step.pair))}</div>
+      <div class="word ${step.sentence ? 'sentence' : ''}" lang="${S.mode === 'da' ? 'tr' : 'en'}">${esc(target(step.pair))}</div>
       <div class="tr">${esc(native(step.pair))}</div>
       <div class="row">
         <button class="round" id="play" aria-label="${t().listen}">${ICON.speaker}</button>
@@ -575,7 +576,7 @@ function renderLesson() {
   } else {
     const ask = step.kind === 'listen'
       ? `<div class="q">${t().quizListen}</div><div class="row"><button class="round" id="play" aria-label="${t().listen}">${ICON.speaker}</button></div>`
-      : `<div class="q">${t().quizTitle} <b lang="${S.mode === 'da' ? 'tr' : 'da'}">${esc(target(step.pair))}</b>?</div>`;
+      : `<div class="q">${t().quizTitle} <b lang="${S.mode === 'da' ? 'tr' : 'en'}">${esc(target(step.pair))}</b> ${t().quizMean}?</div>`;
     const label = p => step.kind === 'listen' ? target(p) : native(p);
     body = `${ask}
       <div class="opts">${step.opts.map((o, k) => `<button class="opt" data-opt="${k}">${esc(label(o))}</button>`).join('')}</div>
@@ -610,7 +611,7 @@ function answer(k) {
 }
 
 function similarity(a, b) {
-  const n = s => s.toLocaleLowerCase(S.mode === 'da' ? 'tr' : 'da').replace(/[^\p{L}\s]/gu, '').trim();
+  const n = s => s.toLocaleLowerCase(S.mode === 'da' ? 'tr' : 'en').replace(/[^\p{L}\s]/gu, '').trim();
   a = n(a); b = n(b);
   const m = a.length, k = b.length, d = Array.from({ length: m + 1 }, (_, i) => [i]);
   for (let j = 1; j <= k; j++) d[0][j] = j;
@@ -631,7 +632,7 @@ function listen() {
   let rec;
   try {
     rec = new SR();
-    rec.lang = S.mode === 'da' ? 'tr-TR' : 'da-DK';
+    rec.lang = S.mode === 'da' ? 'tr-TR' : 'en-GB';
     rec.maxAlternatives = 3;
     const btn = $('#mic'); btn.classList.add('rec');
     rec.onresult = e => {
@@ -666,7 +667,7 @@ function renderResult() {
     <section class="card result">
       <svg width="72" height="72" viewBox="0 0 24 24" aria-hidden="true">${ICON.flame.replace(/^<svg[^>]*>|<\/svg>$/g, '')}</svg>
       <h2>${t().finished}</h2>
-      <div class="big">${after} ${S.mode === 'da' ? 'dage' : 'gün'}</div>
+      <div class="big">${after} ${S.mode === 'da' ? 'days' : 'gün'}</div>
       <div class="stats">
         <div><b>+${gained}</b><small>${t().xp}</small></div>
         <div><b>${st.right}/${quizN}</b><small>${t().score}</small></div>
@@ -681,24 +682,24 @@ function renderResult() {
 // ---------- Samtaletræning ----------
 function renderChat() {
   const da = S.mode === 'da';
-  const intro = `<h2>${da ? 'Samtaletræning' : 'Sohbet pratiği'}</h2>
-    <p class="note">${da ? 'Scene: Du bestiller te på en café i Istanbul. Vælg det rigtige svar.' : 'Sahne: Kopenhag’da bir kafede çay sipariş ediyorsun. Doğru cevabı seç.'}</p>`;
+  const intro = `<h2>${da ? 'Conversation practice' : 'Sohbet pratiği'}</h2>
+    <p class="note">${da ? 'Scene: You’re ordering tea at a café in Istanbul. Pick the right reply.' : 'Sahne: Londra’da bir kafede çay sipariş ediyorsun. Doğru cevabı seç.'}</p>`;
   if (!S.premium) {
     view.innerHTML = `${intro}
       <div class="chat">
-        <div class="bubble them" lang="${da ? 'tr' : 'da'}">${esc(target(DIALOG[0].them))}<small>${esc(native(DIALOG[0].them))}</small></div>
+        <div class="bubble them" lang="${da ? 'tr' : 'en'}">${esc(target(DIALOG[0].them))}<small>${esc(native(DIALOG[0].them))}</small></div>
         <div class="bubble me" style="opacity:.4">· · ·</div>
       </div>
-      <section class="card lockbox">${ICON.lock}<b>${da ? 'Samtaletræning er en del af Premium' : 'Sohbet pratiği Premium’a dahildir'}</b>
-      <p class="note">${da ? 'Øv rigtige situationer: café, taxa, hotel og marked.' : 'Gerçek durumları çalış: kafe, taksi, otel ve pazar.'}</p>
+      <section class="card lockbox">${ICON.lock}<b>${da ? 'Conversation practice is part of Premium' : 'Sohbet pratiği Premium’a dahildir'}</b>
+      <p class="note">${da ? 'Practise real situations: café, taxi, hotel and market.' : 'Gerçek durumları çalış: kafe, taksi, otel ve pazar.'}</p>
       <button class="btn" data-paywall>${t().unlock}</button></section>`;
     return;
   }
-  const log = S.dialogLog.map(m => `<div class="bubble ${m.who}" lang="${da ? 'tr' : 'da'}">${esc(target(m.p))}<small>${esc(native(m.p))}</small></div>`).join('');
+  const log = S.dialogLog.map(m => `<div class="bubble ${m.who}" lang="${da ? 'tr' : 'en'}">${esc(target(m.p))}<small>${esc(native(m.p))}</small></div>`).join('');
   const cur = DIALOG[S.dialogStep];
-  view.innerHTML = `${intro}<div class="chat">${log}${cur ? `<div class="bubble them" lang="${da ? 'tr' : 'da'}">${esc(target(cur.them))}<small>${esc(native(cur.them))}</small></div>` : ''}</div>
+  view.innerHTML = `${intro}<div class="chat">${log}${cur ? `<div class="bubble them" lang="${da ? 'tr' : 'en'}">${esc(target(cur.them))}<small>${esc(native(cur.them))}</small></div>` : ''}</div>
     ${cur ? `<div class="opts">${cur.replies.map((r, k) => `<button class="opt" data-reply="${k}">${esc(target(r))}</button>`).join('')}</div><div id="qfb"></div>`
-          : `<div class="feedback ok">${da ? 'Samtalen er gennemført. Çok güzel!' : 'Sohbet tamamlandı. Çok iyi!'}</div><button class="btn ghost" id="restartChat">${da ? 'Start forfra' : 'Baştan başla'}</button>`}`;
+          : `<div class="feedback ok">${da ? 'Conversation complete. Çok güzel!' : 'Sohbet tamamlandı. Çok iyi!'}</div><button class="btn ghost" id="restartChat">${da ? 'Start over' : 'Baştan başla'}</button>`}`;
   if (cur) speak(target(cur.them));
 }
 
@@ -706,7 +707,7 @@ function reply(k) {
   const cur = DIALOG[S.dialogStep], r = cur.replies[k];
   if (!r[2]) {
     document.querySelectorAll('[data-reply]')[k].classList.add('wrong');
-    $('#qfb').innerHTML = `<div class="feedback info">${esc(native(r))}. ${S.mode === 'da' ? 'Passer ikke her. Prøv igen.' : 'Burada uymuyor. Tekrar dene.'}</div>`;
+    $('#qfb').innerHTML = `<div class="feedback info">${esc(native(r))}. ${S.mode === 'da' ? 'That doesn’t fit here. Try again.' : 'Burada uymuyor. Tekrar dene.'}</div>`;
     return;
   }
   S.dialogLog.push({ who: 'them', p: cur.them }, { who: 'me', p: r });
@@ -719,24 +720,24 @@ let plan = 'year';
 function premiumHTML(reason) {
   const da = S.mode === 'da';
   const rows = da
-    ? [['Lektion 1–5', 1, 1], ['Alle ' + LESSONS.length + ' lektioner + nye hver uge', 0, 1], ['Offline brug', 0, 1], ['Udtalefeedback', 0, 1], ['Samtaletræning', 0, 1]]
+    ? [['Lessons 1–5', 1, 1], ['All ' + LESSONS.length + ' lessons + new ones every week', 0, 1], ['Offline use', 0, 1], ['Pronunciation feedback', 0, 1], ['Conversation practice', 0, 1]]
     : [['Ders 1–5', 1, 1], ['Tüm ' + LESSONS.length + ' ders + her hafta yenileri', 0, 1], ['Çevrimdışı kullanım', 0, 1], ['Telaffuz geri bildirimi', 0, 1], ['Sohbet pratiği', 0, 1]];
   const mark = v => v ? '<span class="yes">✓</span>' : '<span class="no">–</span>';
   return `
     ${reason ? `<span class="eyebrow">${t().locked}: ${esc(reason)}</span>` : ''}
-    <h2 id="sheetTitle">${S.premium ? (da ? 'Du har Premium' : 'Premium aktif') : (da ? 'Lær hele vejen med Premium' : 'Premium ile sonuna kadar öğren')}</h2>
-    <div class="plans" role="group" aria-label="Abonnement">
-      <button class="plan" data-plan="month" aria-pressed="${plan === 'month'}"><small>${da ? 'Månedlig' : 'Aylık'}</small><b>59 kr.</b><small>${da ? 'pr. måned' : 'aylık'}</small></button>
-      <button class="plan" data-plan="year" aria-pressed="${plan === 'year'}"><span class="save">${da ? 'Spar 44 %' : '%44 tasarruf'}</span><small>${da ? 'Årlig' : 'Yıllık'}</small><b>399 kr.</b><small>${da ? 'ca. 33 kr./md.' : 'aylık ~33 DKK'}</small></button>
+    <h2 id="sheetTitle">${S.premium ? (da ? 'You have Premium' : 'Premium aktif') : (da ? 'Go all the way with Premium' : 'Premium ile sonuna kadar öğren')}</h2>
+    <div class="plans" role="group" aria-label="Subscription">
+      <button class="plan" data-plan="month" aria-pressed="${plan === 'month'}"><small>${da ? 'Monthly' : 'Aylık'}</small><b>DKK 59</b><small>${da ? 'per month' : 'aylık'}</small></button>
+      <button class="plan" data-plan="year" aria-pressed="${plan === 'year'}"><span class="save">${da ? 'Save 44%' : '%44 tasarruf'}</span><small>${da ? 'Yearly' : 'Yıllık'}</small><b>DKK 399</b><small>${da ? 'about DKK 33/month' : 'aylık ~33 DKK'}</small></button>
     </div>
     <table class="compare"><thead><tr><th></th><th>${t().free}</th><th>Premium</th></tr></thead>
       <tbody>${rows.map(r => `<tr><td>${r[0]}</td><td>${mark(r[1])}</td><td>${mark(r[2])}</td></tr>`).join('')}</tbody></table>
-    <button class="btn" id="togglePremium">${S.premium ? (da ? 'Slå demo-Premium fra' : 'Demo Premium’u kapat') : (da ? 'Prøv Premium (demo)' : 'Premium’u dene (demo)')}</button>
-    <p class="note">${da ? 'Prototype: knappen slår Premium til uden betaling, så du kan se de låste funktioner.' : 'Prototip: düğme ödeme olmadan Premium’u açar, böylece kilitli özellikleri görebilirsin.'}</p>`;
+    <button class="btn" id="togglePremium">${S.premium ? (da ? 'Turn off demo Premium' : 'Demo Premium’u kapat') : (da ? 'Try Premium (demo)' : 'Premium’u dene (demo)')}</button>
+    <p class="note">${da ? 'Prototype: this button turns on Premium without payment so you can see the locked features.' : 'Prototip: düğme ödeme olmadan Premium’u açar, böylece kilitli özellikleri görebilirsin.'}</p>`;
 }
 function renderPremium() { view.innerHTML = `<section class="card" style="gap:14px">${premiumHTML()}</section>`; }
 function openPaywall(reason) {
-  $('#sheetPanel').innerHTML = premiumHTML(reason) + `<button class="btn ghost" id="closeSheet">${S.mode === 'da' ? 'Ikke nu' : 'Şimdi değil'}</button>`;
+  $('#sheetPanel').innerHTML = premiumHTML(reason) + `<button class="btn ghost" id="closeSheet">${S.mode === 'da' ? 'Not now' : 'Şimdi değil'}</button>`;
   $('#sheet').hidden = false;
   $('#togglePremium').focus();
 }
@@ -792,10 +793,10 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   const box = $('#install'), how = $('#installHow'), go = $('#installGo');
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const shareIco = '<svg class="share-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4M5 12v8h14v-8"/></svg>';
-  if (ios) { how.innerHTML = `Tryk på ${shareIco} Del og vælg <b style="display:inline">Føj til hjemmeskærm</b>.`; box.hidden = false; }
-  else { how.textContent = 'Tryk på ⋮ i browseren og vælg "Føj til startskærm".'; box.hidden = false; }
+  if (ios) { how.innerHTML = `Tap ${shareIco} Share and choose <b style="display:inline">Add to Home Screen</b>.`; box.hidden = false; }
+  else { how.textContent = 'Tap ⋮ in your browser and choose "Add to Home screen".'; box.hidden = false; }
   let deferred;
-  addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; how.textContent = 'Så åbner den som en app, også offline.'; go.hidden = false; box.hidden = false; });
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; how.textContent = 'It opens like an app, even offline.'; go.hidden = false; box.hidden = false; });
   go.onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice.catch(() => {}); deferred = null; box.hidden = true; };
   $('#installX').onclick = () => { box.hidden = true; store.set('installDismissed', true); };
   addEventListener('appinstalled', () => { box.hidden = true; });
